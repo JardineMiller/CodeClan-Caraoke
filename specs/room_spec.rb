@@ -7,14 +7,18 @@ require_relative('../song.rb')
 class RoomSpec < MiniTest::Test
 
 	def setup	
-		@room = Room.new(5)
-		@bohemian_rhapsody = Song.new({artist: "Queen", song: "Bohemian Rhapsody"})
-		@two_shoes = Song.new({artist: "The Cat Empire", song: "Two Shoes"})
-		@bad = Song.new({artist: "Michael Jackson", song: "Bad"})
+		@room = Room.new("Retro", 5)
 
-		@jardine = Person.new("Jardine", 50, @two_shoes)
-		@billy = Person.new("Billy", 10, @bad)
-		@kirsty = Person.new("Kirsty", 50, @bohemian_rhapsody)
+		@bohemian_rhapsody = Song.new("Queen", "Bohemian Rhapsody")
+		@two_shoes = Song.new("The Cat Empire", "Two Shoes")
+		@bad = Song.new("Michael Jackson", "Bad")
+
+		@jardine = Person.new("Jardine", "student", 50, @two_shoes)
+		@billy = Person.new("Billy", "child", 10, @bad)
+		@kirsty = Person.new("Kirsty", "adult", 50, @bohemian_rhapsody)
+		@james = Person.new("James", "adult", 50, @bohemian_rhapsody)
+		@kelly = Person.new("Kelly", "adult", 50, @bad)
+		@julia = Person.new("Julia", "concession", 50, @bad)
 	end
 
 	def test_room_size
@@ -34,20 +38,39 @@ class RoomSpec < MiniTest::Test
 		assert_equal([@jardine], @room.occupants)
 	end
 
-	def test_room_check_in__person_not_found
-		@room.check_in(@graham)
-		assert_equal([nil], @room.occupants)
-	end
-
 	def test_room_check_out
 		@room.check_in(@jardine)
 		@room.check_out(@jardine)
 		assert_equal([], @room.occupants)
 	end
 
-	def test_add_song
+	def test_room_add_song
 		@room.add_song(@two_shoes)
 		assert_equal([@two_shoes], @room.songs)
+	end
+
+	def test_room_is_full
+		@room.check_in(@jardine)
+		@room.check_in(@billy)
+		@room.check_in(@kirsty)
+		@room.check_in(@kelly)
+		@room.check_in(@julia)
+		assert_equal(true, @room.is_full?)
+	end
+
+	def test_room_is_full
+		@room.check_in(@jardine)
+		@room.check_in(@billy)
+		@room.check_in(@kirsty)
+		@room.check_in(@kelly)
+		@room.check_in(@julia)
+		@room.check_in(@james)
+		assert_equal(5, @room.occupants.count)
+	end
+
+	def test_room_determine_price
+		@room.check_in(@jardine)
+		assert_equal(44, @jardine.wallet)
 	end
 
 end
